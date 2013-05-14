@@ -48,13 +48,12 @@ The value returned from the function is a list containing the following componen
 \item{DS}{A list containing the \eqn{t} small designs for the \eqn{t} slices}
 \item{standD}{Standardized design matrix which is scaled into the \eqn{[0,1]^k} unit region}
 \item{standDS}{A list containing the \eqn{t} standardized small designs for the \eqn{t} slices}
-\item{ntotal}{The total number of designs searched}
 \item{temp0}{Initial temperature}
 \item{measure}{The average reciprocal inter-point distance measure}
 \item{time_rec}{Time to complete the search}
 }
 \references{
-Ba, S. (2013), "Optimal Sliced Latin Hypercube Designs," submitted to \emph{Technometrics}.
+Ba, S. (2013), "Optimal Sliced Latin Hypercube Designs," revised for \emph{Technometrics}.
 }
 \author{
 Shan Ba<shanbatr@gmail.com>

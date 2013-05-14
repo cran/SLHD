@@ -10,7 +10,7 @@
 #define	 int8	      unsigned int
 #define  Min(a,b)     (a<b)?a:b
 #define  Max(a,b)     (a>b)?a:b
-#define	 MAX	      (int8) (pow(2,31)-1)
+#define	 MAX	      (int8) (pow( (double)(2),31)-1)
 #define  autoseed(x)  (int8)(rand()*x+x)
 
 
@@ -32,7 +32,7 @@ void update_avgdist_sliceII(int n, int m, int p, int location1, int location2, d
 double update_combavgdistII(int m, int t, int p, int location1, int location2, double *d, double *d_old, double *avgdist_slice, double *avgdist_slice_old, double *avgdist_old, double *avgdist_cur);
 
 
-void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, int *IterMax, int *Total_Iter, int *design, double *measure, double *temp0, int *ntotal)
+void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, int *IterMax, int *Total_Iter, int *design, double *measure, double *temp0)
 {
 		
 	double seed=rand();
@@ -50,6 +50,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 	
 	int max_itotal1;
 	int max_itotal2;
+
 	if(t>1){ 
 		max_itotal1=max_itotal*0.75;
 		max_itotal2=max_itotal*0.25;
@@ -61,7 +62,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 	}
 	   
 
-
+	int ntotal=0;
 	double t0;
 	double xcrit;
 	double critbest;
@@ -122,9 +123,9 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 	
 
 /////calculate starting temperature.
-	double avgd2= k*n*(n+1)*pow(6,-1);
-	double delta0= pow((avgd2-k),-0.5) - pow(avgd2,-0.5);
-	t0=-delta0*pow((log(0.99)),(-1));
+	double avgd2= k*n*(n+1)*pow( (double)(6),-1);
+	double delta0= pow( (double)(avgd2-k),-0.5) - pow( (double)(avgd2),-0.5);
+	t0=-delta0*pow( (double)(log(0.99)),(-1));
 	*temp0=t0;
 
 	
@@ -218,7 +219,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 					{
 		 ///////// xtry is worst than x////////////////////////////
 					    double delta1=crittry-xcrit;
-					    double prob=exp(-delta1*pow(temp,(-1)));     
+					    double prob=exp(-delta1*pow( (double)(temp),(-1)));     
  					    seed=seed+isearch+ipert;
 					    double q=runif(seed);
 					     if(prob>=q)
@@ -392,7 +393,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 					{
 		 ///////// xtry is worst than x////////////////////////////
 					    double delta1=crittry-xcrit;
-					    double prob=exp(-delta1*pow(temp,(-1)));     
+					    double prob=exp(-delta1*pow( (double)(temp),(-1)));     
  					    seed=seed+ipert;
 					    double q=runif(seed);
 					     if(prob>=q)
@@ -439,7 +440,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 		
 	
 	*measure=critbest;
-	*ntotal=itotal+itotal2;
+	ntotal=itotal+itotal2;
 					
 	
 
@@ -497,7 +498,7 @@ int **LHD(int n, int k, double seed)
 			te=rc(n-c,seed);
 			*(*(LHD+j1+1)+c)=*(r+te);
 
-		    for(int c1=0;c1<(n-c);c1++)
+		    for(int c1=0;c1<(n-c-1);c1++)
 			{
 			    if(c1>=te)
 				{
@@ -524,7 +525,7 @@ int **SLHD(int m, int t, int k, double seed)
 	int **SLHD;
 	int *r;
 	int n=m*t;
-	r=new int [n];
+	r=new int [m];
     SLHD=new int*[k];
 	for(int iii=0;iii<k;iii++)
 	{
@@ -552,7 +553,7 @@ int **SLHD(int m, int t, int k, double seed)
 			te=rc(m-c,seed);
 			*(*(SLHD+j1+1)+jss*m+c)=*(r+te);
 
-		    for(int c1=0;c1<(m-c);c1++)
+		    for(int c1=0;c1<(m-c-1);c1++)
 			{
 			    if(c1>=te)
 				{
@@ -641,10 +642,10 @@ void distmatrix(int **A, int n, int k, double *d) // To compute the interpoint d
 		{  			
 			for(int k3=0;k3<k;k3++)
 			{
-				d[count] += pow((*(*(A+k3)+k1)-*(*(A+k3)+k2)),2);
+				d[count] += pow( (double)(*(*(A+k3)+k1)-*(*(A+k3)+k2)),2);
 			}
 
-			d[count]=pow(d[count],0.5);
+			d[count]=pow( (double)(d[count]),0.5);
 			count++;
 		}
 	}
@@ -660,10 +661,10 @@ void avgdist(int n, int p, double *d, double *avgdist_cur) // To compute the ave
 
 	for(int i=0; i<dim; i++)
 	{
-		avgdist += pow(d[i],(-p));
+		avgdist += pow( (double)(d[i]),(-p));
 	}
-	avgdist=avgdist*pow(dim,-1);
-	*avgdist_cur=pow(avgdist,(pow(p,(-1))));
+	avgdist=avgdist*pow( (double)(dim),-1);
+	*avgdist_cur=pow( (double)(avgdist),(pow( (double)(p),(-1))));
 
 }
 
@@ -685,12 +686,12 @@ double combavgdist(int m, int t, int p, double *d, double *avgdist_slice, double
 	for(int ns=0;ns<t;ns++){
 		for(int nn1=ns*m;nn1<((ns+1)*m-1);nn1++){
 			for(int nn2=nn1+1;nn2<(ns+1)*m;nn2++){
-				count=(int) nn2+1-0.5*pow(nn1+1,2)+(n-0.5)*(nn1+1)-n-1;
-				avgdist_slice[ns] += pow(d[count],(-p));		
+				count=(int) nn2+1-0.5*pow( (double)(nn1+1),2)+(n-0.5)*(nn1+1)-n-1;
+				avgdist_slice[ns] += pow( (double)(d[count]),(-p));		
 			}
 		}
-		avgdist_slice[ns]=avgdist_slice[ns]*pow(dim_slice,-1);
-	    avgdist_slice[ns]=pow(avgdist_slice[ns],(pow(p,(-1))));
+		avgdist_slice[ns]=avgdist_slice[ns]*pow( (double)(dim_slice),-1);
+	    avgdist_slice[ns]=pow( (double)(avgdist_slice[ns]),(pow( (double)(p),(-1))));
 
 	}
 
@@ -699,7 +700,7 @@ double combavgdist(int m, int t, int p, double *d, double *avgdist_slice, double
 	}
 	
 	avgdist(n,p,d,avgdist_cur);
-	combavgdist=(*avgdist_cur+combavgdist*pow(t,-1))*pow(2,-1);
+	combavgdist=(*avgdist_cur+combavgdist*pow( (double)(t),-1))*pow( (double)(2),-1);
 	
 	return(combavgdist);
 
@@ -731,38 +732,38 @@ void update_distmatrix(int **A, int n, int col, int selrow1, int selrow2, double
 	if(row1>0){
 	for(int h=0;h<row1;h++) //h<row1<row2
 	{ 
-		s=pow((*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow((*(*(A+col)+row1)-*(*(A+col)+h)),2);
-		position1=(int) row1+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
-		position2=(int) row2+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
+		s=pow( (double)(*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow( (double)(*(*(A+col)+row1)-*(*(A+col)+h)),2);
+		position1=(int) row1+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
+		position2=(int) row2+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
 		d_old[position1] = d[position1];
 		d_old[position2] = d[position2];
-		d[position1] = pow( pow(d[position1],2)-s, 0.5);
-		d[position2] = pow( pow(d[position2],2)+s, 0.5);
+		d[position1] = pow( (double)(pow( (double)(d[position1]),2)-s), 0.5);
+		d[position2] = pow( (double)(pow( (double)(d[position2]),2)+s), 0.5);
 		
 	}
 	}
 	
 	for(int h=(row1+1);h<row2;h++) //row1<h<row2
 	{ 
-		s=pow((*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow((*(*(A+col)+row1)-*(*(A+col)+h)),2);
-		position1=(int) h+1-pow(row1+1,2)*0.5+(n-0.5)*(row1+1)-n-1;
-		position2=(int) row2+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
+		s=pow( (double)(*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow( (double)(*(*(A+col)+row1)-*(*(A+col)+h)),2);
+		position1=(int) h+1-pow( (double)(row1+1),2)*0.5+(n-0.5)*(row1+1)-n-1;
+		position2=(int) row2+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
 		d_old[position1] = d[position1];
 		d_old[position2] = d[position2];
-		d[position1] = pow( pow(d[position1],2)-s, 0.5);
-		d[position2] = pow( pow(d[position2],2)+s, 0.5);
+		d[position1] = pow( (double)(pow( (double)(d[position1]),2)-s), 0.5);
+		d[position2] = pow( (double)(pow( (double)(d[position2]),2)+s), 0.5);
 	}
 	
 	if(row2<(n-1)){
 	for(int h=(row2+1);h<n;h++) //row1<row2<h
 	{ 
-		s=pow((*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow((*(*(A+col)+row1)-*(*(A+col)+h)),2);
-		position1=(int) h+1-pow(row1+1,2)*0.5+(n-0.5)*(row1+1)-n-1;
-		position2=(int) h+1-pow(row2+1,2)*0.5+(n-0.5)*(row2+1)-n-1;
+		s=pow( (double)(*(*(A+col)+row2)-*(*(A+col)+h)),2)-pow( (double)(*(*(A+col)+row1)-*(*(A+col)+h)),2);
+		position1=(int) h+1-pow( (double)(row1+1),2)*0.5+(n-0.5)*(row1+1)-n-1;
+		position2=(int) h+1-pow( (double)(row2+1),2)*0.5+(n-0.5)*(row2+1)-n-1;
 		d_old[position1] = d[position1];
 		d_old[position2] = d[position2];
-		d[position1] = pow( pow(d[position1],2)-s, 0.5);
-		d[position2] = pow( pow(d[position2],2)+s, 0.5);
+		d[position1] = pow( (double)(pow( (double)(d[position1]),2)-s), 0.5);
+		d[position2] = pow( (double)(pow( (double)(d[position2]),2)+s), 0.5);
 	}
 	}
 	
@@ -780,8 +781,8 @@ void revert_distmatrix(int n, int selrow1, int selrow2, double *d, double *d_old
 	if(row1>0){
 	for(int h=0;h<row1;h++) //h<row1<row2
 	{ 
-		position1=(int) row1+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
-		position2=(int) row2+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
+		position1=(int) row1+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
+		position2=(int) row2+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
 		d[position1] = d_old[position1];
 		d[position2] = d_old[position2];
 		
@@ -790,8 +791,8 @@ void revert_distmatrix(int n, int selrow1, int selrow2, double *d, double *d_old
 	
 	for(int h=(row1+1);h<row2;h++) //row1<h<row2
 	{ 
-		position1=(int) h+1-pow(row1+1,2)*0.5+(n-0.5)*(row1+1)-n-1;
-		position2=(int) row2+1-pow(h+1,2)*0.5+(n-0.5)*(h+1)-n-1;
+		position1=(int) h+1-pow( (double)(row1+1),2)*0.5+(n-0.5)*(row1+1)-n-1;
+		position2=(int) row2+1-pow( (double)(h+1),2)*0.5+(n-0.5)*(h+1)-n-1;
 		d[position1] = d_old[position1];
 		d[position2] = d_old[position2];
 	}
@@ -799,8 +800,8 @@ void revert_distmatrix(int n, int selrow1, int selrow2, double *d, double *d_old
 	if(row2<(n-1)){
 	for(int h=(row2+1);h<n;h++) //row1<row2<h
 	{ 
-		position1=(int) h+1-pow(row1+1,2)*0.5+(n-0.5)*(row1+1)-n-1;
-		position2=(int) h+1-pow(row2+1,2)*0.5+(n-0.5)*(row2+1)-n-1;
+		position1=(int) h+1-pow( (double)(row1+1),2)*0.5+(n-0.5)*(row1+1)-n-1;
+		position2=(int) h+1-pow( (double)(row2+1),2)*0.5+(n-0.5)*(row2+1)-n-1;
 		d[position1] = d_old[position1];
 		d[position2] = d_old[position2];
 	}
@@ -822,10 +823,10 @@ void update_avgdist(int n, int p, int selrow1, int selrow2, double *d, double *d
 
 	for(int i=0; i<dim; i++)
 	{
-		avgdist0 += pow(d[i],(-p));
+		avgdist0 += pow( (double)(d[i]),(-p));
 	}
-	avgdist0=avgdist0*pow(dim,-1);
-	avgdist0=pow(avgdist0,(pow(p,(-1))));
+	avgdist0=avgdist0*pow( (double)(dim),-1);
+	avgdist0=pow( (double)(avgdist0),(pow( (double)(p),(-1))));
 
 	*avgdist_cur=avgdist0;
 	
@@ -846,12 +847,12 @@ void update_avgdist_sliceI(int n, int m, int p, int translice, int tran1, int tr
 	int pos;
 	for(int nn2=translice*m;nn2<(translice*m+m-1);nn2++){
 			for(int nn1=(nn2+1);nn1<(translice*m+m);nn1++){
-				pos=nn1+1-pow(nn2+1,2)*0.5+(nn2+1)*(n-0.5)-n-1;
-				sliceavgdist0 += pow(d[pos],(-p));
+				pos=nn1+1-pow( (double)(nn2+1),2)*0.5+(nn2+1)*(n-0.5)-n-1;
+				sliceavgdist0 += pow( (double)(d[pos]),(-p));
 			}
 	}
-	sliceavgdist0=sliceavgdist0*pow(dim_slice,-1);
-	sliceavgdist0=pow(sliceavgdist0,pow(p,-1));
+	sliceavgdist0=sliceavgdist0*pow( (double)(dim_slice),-1);
+	sliceavgdist0=pow( (double)(sliceavgdist0),pow( (double)(p),-1));
 	avgdist_slice[translice]=sliceavgdist0;
 
 }
@@ -872,7 +873,7 @@ double update_combavgdistI(int m, int t, int p, int translice, int tran1, int tr
 		combavgdist=combavgdist+avgdist_slice[iii];
 	}
 	
-	combavgdist=(*avgdist_cur+combavgdist*pow(t,-1))*pow(2,-1);
+	combavgdist=(*avgdist_cur+combavgdist*pow( (double)(t),-1))*pow( (double)(2),-1);
 	
 	return(combavgdist);
 	}
@@ -911,23 +912,23 @@ void update_avgdist_sliceII(int n, int m, int p, int location1, int location2, d
 	double sliceavgdist01=0;	
 	for(int nn2=nslice1*m;nn2<(nslice1*m+m-1);nn2++){
 			for(int nn1=(nn2+1);nn1<(nslice1*m+m);nn1++){
-				pos=nn1+1-pow(nn2+1,2)*0.5+(nn2+1)*(n-0.5)-n-1;
-				sliceavgdist01 += pow(d[pos],(-p));
+				pos=nn1+1-pow( (double)(nn2+1),2)*0.5+(nn2+1)*(n-0.5)-n-1;
+				sliceavgdist01 += pow( (double)(d[pos]),(-p));
 			}
 	}
-	sliceavgdist01=sliceavgdist01*pow(dim_slice,-1);
-	sliceavgdist01=pow(sliceavgdist01,pow(p,-1));
+	sliceavgdist01=sliceavgdist01*pow( (double)(dim_slice),-1);
+	sliceavgdist01=pow( (double)(sliceavgdist01),pow( (double)(p),-1));
 	avgdist_slice[nslice1]=sliceavgdist01;
 
 	double sliceavgdist02=0;	
 	for(int nn2=nslice2*m;nn2<(nslice2*m+m-1);nn2++){
 			for(int nn1=(nn2+1);nn1<(nslice2*m+m);nn1++){
-				pos=nn1+1-pow(nn2+1,2)*0.5+(nn2+1)*(n-0.5)-n-1;
-				sliceavgdist02 += pow(d[pos],(-p));
+				pos=nn1+1-pow( (double)(nn2+1),2)*0.5+(nn2+1)*(n-0.5)-n-1;
+				sliceavgdist02 += pow( (double)(d[pos]),(-p));
 			}
 	}
-	sliceavgdist02=sliceavgdist02*pow(dim_slice,-1);
-	sliceavgdist02=pow(sliceavgdist02,pow(p,-1));
+	sliceavgdist02=sliceavgdist02*pow( (double)(dim_slice),-1);
+	sliceavgdist02=pow( (double)(sliceavgdist02),pow( (double)(p),-1));
 	avgdist_slice[nslice2]=sliceavgdist02;
 
 }
@@ -947,7 +948,7 @@ double update_combavgdistII(int m, int t, int p, int location1, int location2, d
 		combavgdist=combavgdist+avgdist_slice[iii];
 	}
 	
-	combavgdist=(*avgdist_cur+combavgdist*pow(t,-1))*pow(2,-1);
+	combavgdist=(*avgdist_cur+combavgdist*pow( (double)(t),-1))*pow( (double)(2),-1);
 	
 	return(combavgdist);
 }

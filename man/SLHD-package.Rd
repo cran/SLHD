@@ -12,8 +12,8 @@ Generate the optimal Latin hypercube designs and the optimal sliced Latin hyperc
 \tabular{ll}{
 Package: \tab SLHD\cr
 Type: \tab Package\cr
-Version: \tab 1.0-3\cr
-Date: \tab 2013-02-12\cr
+Version: \tab 1.2-1\cr
+Date: \tab 2013-05-14\cr
 License: \tab LGPL-2.1\cr
 }
 This package contains functions for generating the optimal Latin hypercube designs (LHDs) when \eqn{t=1} and the optimal sliced Latin hypercube designs (SLHDs) when \eqn{t>1}. The maximin distance criterion is adopted as the optimality criterion. 
@@ -30,7 +30,7 @@ Shan Ba
 Maintainer: Shan Ba <shanbatr@gmail.com>
 }
 \references{
-Ba, S. (2013), "Optimal Sliced Latin Hypercube Designs," submitted to \emph{Technometrics}. 
+Ba, S. (2013), "Optimal Sliced Latin Hypercube Designs," revised for \emph{Technometrics}. 
 }
 
 \keyword{ package }
