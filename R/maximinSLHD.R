@@ -12,20 +12,15 @@ function(t,m,k,power=15,nstarts=1,itermax=100,total_iter=1000000){
   time_rec=t01-t00
   
   dd=matrix(aaa$design,ncol=k,nrow=n,byrow=TRUE)
-  
-  Dslice<-list()
-  for(i in 1:t){
-    Dslice[[i]]<-dd[((i-1)*m+1):(i*m),]
+  dds<-(apply(dd,2,rank)-0.5)/n
+    
+  if(t>1){
+    Slice<-rep(1:t,each=m)
+    dd<-cbind(Slice,dd)
+    dds<-cbind(Slice,dds)
   }
   
-  scaled_deisgn<-(apply(dd,2,rank)-0.5)/n
-  
-  SDslice<-list()
-  for(i in 1:t){
-    SDslice[[i]]<-scaled_deisgn[((i-1)*m+1):(i*m),]
-  }
-  
-  val<-list(D=dd,DS=Dslice,standD=scaled_deisgn,standDS=SDslice,temp0=aaa$temp0,measure=aaa$measure,time_rec=time_rec)
+  val<-list(Design=dd,measure=aaa$measure,StandDesign=dds,temp0=aaa$temp0,time_rec=time_rec)
   
   return(val)
 }

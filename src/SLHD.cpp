@@ -7,19 +7,16 @@
 # include <stdlib.h>
 # include <time.h>
 # include <R.h>
-#define	 int8	      unsigned int
+# include <Rmath.h>
 #define  Min(a,b)     (a<b)?a:b
 #define  Max(a,b)     (a>b)?a:b
-#define	 MAX	      (int8) (pow( (double)(2),31)-1)
-#define  autoseed(x)  (int8)(rand()*x+x)
 
 
 extern "C" {
-int rc(int n ,double seed) ;
-double runif(double seed);  
-int rc2(int n,int del,double seed);
-int **LHD(int n,int k,double seed);
-int **SLHD(int m, int t, int k, double seed);
+int rc(int n); 
+int rc2(int n,int del);
+int **LHD(int n,int k);
+int **SLHD(int m, int t, int k);
 void distmatrix(int **A, int n, int k, double *d);
 void avgdist(int n, int p, double *d, double *avgdist_cur);
 double combavgdist(int m, int t, int p, double *d, double *avgdist_slice, double *avgdist_cur);
@@ -35,7 +32,7 @@ double update_combavgdistII(int m, int t, int p, int location1, int location2, d
 void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, int *IterMax, int *Total_Iter, int *design, double *measure, double *temp0)
 {
 		
-	double seed=rand();
+	GetRNGstate();
     const int k=*Col;                 // define k: number of factors  <= change here
 	const int m=*mRow;               // define m: number of runs in each slice <= change here
 	const int t=*nslice;                // define t: number of slices    <= change here
@@ -116,8 +113,8 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 	}
 
 //////initialized the best design ////////////////
-	seed=rand();
-	xbest=SLHD(m,t,k,seed);
+
+	xbest=SLHD(m,t,k);
 	distmatrix(xbest,n,k,d);
 	critbest=combavgdist(m,t,p,d,avgdist_slice, avgdist_cur);
 	
@@ -134,8 +131,8 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 		for(int isearch=1;isearch<=nsearch;isearch++)
 		{
 			//////initial design ////////////////
-			seed=rand();
-			x=SLHD(m,t,k,seed);
+
+			x=SLHD(m,t,k);
 			for(int n2=0;n2<k;n2++)
 			{
 				for(int n1=0;n1<n;n1++)
@@ -166,14 +163,14 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 					 int translice;
 					 int tran1;
 					 int tran2;
-					 seed=rand();
-					 ind=rc((k-1),seed);
-					 seed=rand();
-					 translice=rc(t,seed);
-					 seed=rand();
-					 tran1=rc(m,seed);
-					 seed=rand();
-					 tran2=rc2(m,tran1,seed); 	
+
+					 ind=rc(k-1);
+
+					 translice=rc(t);
+
+					 tran1=rc(m);
+
+					 tran2=rc2(m,tran1); 	
        /////////perturb x to xtry////////////////////
  					 *(*(xtry+ind+1)+translice*m+tran2)=*(*(x+ind+1)+translice*m+tran1);
 				     *(*(xtry+ind+1)+translice*m+tran1)=*(*(x+ind+1)+translice*m+tran2);
@@ -220,8 +217,9 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 		 ///////// xtry is worst than x////////////////////////////
 					    double delta1=crittry-xcrit;
 					    double prob=exp(-delta1*pow( (double)(temp),(-1)));     
- 					    seed=seed+isearch+ipert;
-					    double q=runif(seed);
+						//GetRNGstate();
+						double q = unif_rand();
+						//PutRNGstate();
 					     if(prob>=q)
 						 {///// replce x by xtry by prob///////////
  				           	 *(*(x+ind+1)+translice*m+tran1)=*(*(xtry+ind+1)+translice*m+tran1);
@@ -334,14 +332,10 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 					 int tranm;
 					 int tran1;
 					 int tran2;
-					 seed=rand();
-					 ind=rc(k,seed);
-					 seed=rand();
-					 tranm=rc(m,seed);
-					 seed=rand();
-					 tran1=rc(t,seed);
-					 seed=rand();
-					 tran2=rc2(t,tran1,seed); 	
+					 ind=rc(k);
+					 tranm=rc(m);
+					 tran1=rc(t);
+					 tran2=rc2(t,tran1); 	
 
 					 location1=*(*(lmatrix+ind)+tranm*t+tran1);
 					 location2=*(*(lmatrix+ind)+tranm*t+tran2);
@@ -394,8 +388,9 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 		 ///////// xtry is worst than x////////////////////////////
 					    double delta1=crittry-xcrit;
 					    double prob=exp(-delta1*pow( (double)(temp),(-1)));     
- 					    seed=seed+ipert;
-					    double q=runif(seed);
+						//GetRNGstate();
+						double q = unif_rand();
+						//PutRNGstate();
 					     if(prob>=q)
 						 {///// replce x by xtry by prob///////////
  				           	 *(*(x+ind)+location1)=*(*(xtry+ind)+location1);
@@ -438,7 +433,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 		}
 
 		
-	
+	PutRNGstate();
 	*measure=critbest;
 	ntotal=itotal+itotal2;
 					
@@ -462,6 +457,9 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 	delete []avgdist_slice;
 	delete []d;
 	delete []d_old;
+
+	delete avgdist_cur;
+	delete avgdist_old;
 }
 
 
@@ -469,7 +467,7 @@ void maximinSLHD(int *mRow, int *Col, int *nslice, int *npower, int *nstarts, in
 
 ///////////////////////////////////////
 
-int **LHD(int n, int k, double seed)
+int **LHD(int n, int k)
 {
 	int te;
 	int **LHD;
@@ -493,9 +491,8 @@ int **LHD(int n, int k, double seed)
 	   }
 	   for(int c=0;c<n;c++)
 	   {
-			seed=seed+j1*c;
-			seed=seed+10;
-			te=rc(n-c,seed);
+
+			te=rc(n-c);
 			*(*(LHD+j1+1)+c)=*(r+te);
 
 		    for(int c1=0;c1<(n-c-1);c1++)
@@ -519,7 +516,7 @@ int **LHD(int n, int k, double seed)
 
 
 
-int **SLHD(int m, int t, int k, double seed)
+int **SLHD(int m, int t, int k)
 {
 	int te;
 	int **SLHD;
@@ -548,9 +545,7 @@ int **SLHD(int m, int t, int k, double seed)
 	   }
 	   for(int c=0;c<m;c++)
 	   {
-			seed=seed+j1*c;
-			seed=seed+10+jss;
-			te=rc(m-c,seed);
+			te=rc(m-c);
 			*(*(SLHD+j1+1)+jss*m+c)=*(r+te);
 
 		    for(int c1=0;c1<(m-c-1);c1++)
@@ -600,30 +595,25 @@ int **SLHD(int m, int t, int k, double seed)
 
 
   
-int rc2(int n,int del,double seed)
+int rc2(int n, int del)
 {
-   int rctwo;
-   
-   rctwo= rc( n-1, seed);
-   if (rctwo >= del)  rctwo++;
+	int rctwo;
 
-   return(rctwo);
+	rctwo = rc(n - 1);
+	if (rctwo >= del)  rctwo++;
+
+	return(rctwo);
 }
- 
-int rc(int n,double seed ) // choose randomly from 0 to (n-1)
-{
-   int r;
-   double u; 
-   u = (double) (rand()*autoseed(seed)%MAX)/MAX;
-   r=(int)(n*u);
-   return(r);
-} 
 
-double runif(double seed)
+int rc(int n) // choose randomly from 0 to (n-1)
 {
-   double runif;
-   runif= (double) (rand()*autoseed(seed)%MAX)/MAX;
-   return(runif);
+	int r;
+	double u;
+	//GetRNGstate();
+	u= unif_rand();
+	//PutRNGstate();
+	r = (int)(n*u);
+	return(r);
 }
 
 

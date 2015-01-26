@@ -35,7 +35,7 @@ Optional, default is ``1e+06''.The maximum total number of iterations. Lower thi
 }
 }
 \details{
-This function utilizes a version of the simulated annealing algorithm and several computational shortcuts to efficiently generate the optimal Latin Hypercube Designs (LHDs) and the optimal Sliced Latin Hypercube Designs (SLHDs). The maximin distance criterion is adopted as the optimality criterion. Please refer to Ba (2013) for details of the algorithm. 
+This function utilizes a version of the simulated annealing algorithm and several computational shortcuts to efficiently generate the optimal Latin Hypercube Designs (LHDs) and the optimal Sliced Latin Hypercube Designs (SLHDs). The maximin distance criterion is adopted as the optimality criterion. Please refer to Ba et al. (2015) for details of the algorithm. 
 
 
 When \eqn{t=1}, the maximin-distance LHD is popularly used for designing computer experiments with quantitative factors.  
@@ -44,16 +44,14 @@ When \eqn{t>1}, the maximin-distance SLHD is a special class of LHD which can be
 }
 \value{
 The value returned from the function is a list containing the following components:
-\item{D}{Design matrix}
-\item{DS}{A list containing the \eqn{t} small designs for the \eqn{t} slices}
-\item{standD}{Standardized design matrix which is scaled into the \eqn{[0,1]^k} unit region}
-\item{standDS}{A list containing the \eqn{t} standardized small designs for the \eqn{t} slices}
-\item{temp0}{Initial temperature}
+\item{Design}{The optimal design matrix. When \eqn{t=1}, it is a maximin-distance LHD; when \eqn{t>1}, it is a maximin-distance SLHD with the first column representing the slice number.}
 \item{measure}{The average reciprocal inter-point distance measure}
+\item{StandDesign}{The optimal design matrix after standardizing each continuous variable into (0,1) scale}
+\item{temp0}{Initial temperature}
 \item{time_rec}{Time to complete the search}
 }
 \references{
-Ba, S. (2013), "Optimal Sliced Latin Hypercube Designs," revised for \emph{Technometrics}.
+Ba, S., Brenneman, W. A. and Myers, W. R. (2015), "Optimal Sliced Latin Hypercube Designs," \emph{Technometrics}. 
 }
 \author{
 Shan Ba<shanbatr@gmail.com>
@@ -65,15 +63,15 @@ Shan Ba<shanbatr@gmail.com>
 
 \examples{
 
-#Maximin-Distance Latin Hypercube Designs
+#Maximin-distance Latin hypercube design
 D1<-maximinSLHD(t = 1, m = 10, k = 3) 
-D1$D
-D1$standD
+D1$Design
+D1$StandDesign
 
-#Maximin Distance Sliced Latin Hypercube Designs
+#Maximin-distance sliced Latin hypercube designs
 D2<-maximinSLHD(t = 3, m = 4, k = 2) 
-D2$DS
-D2$D
+D2$Design
+D2$StandDesign
 }
 
 \keyword{ Design of Experiments }
